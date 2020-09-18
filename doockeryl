@@ -1,0 +1,19 @@
+version: "3.5"
+
+services:
+  workflow-engine:
+    image: twitterbot9
+    environment:
+        LOGINUSERNAME: /run/secrets/LOGINUSERNAME
+        PASSWORD: /run/secrets/PASSWORD
+        TWOFACTOREMAIL: /run/secrets/TWOFACTOREMAIL
+      HOST: 0.0.0.0
+      HTTP_PORT: 9001
+      LOG_LEVEL: 1
+secrets:
+LOGINUSERNAME:
+    external: true
+PASSWORD:
+    external: true
+TWOFACTOREMAIL:
+    external: true

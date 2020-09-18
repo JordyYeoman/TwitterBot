@@ -1,11 +1,16 @@
 const puppeteer = require("puppeteer");
-const mongoose = require("mongoose");
-const schedule = require("node-schedule");
+//const mongoose = require("mongoose");
+//const schedule = require("node-schedule");
 require("dotenv").config();
 const fetch = require("node-fetch");
+//const environemnt = require('./environmentals');
+
 
 const username = process.env.LOGINUSERNAME;
 const password = process.env.PASSWORD;
+
+//const username = process.env.LOGINUSERNAME;
+//const password = process.env.PASSWORD;
 const twoFactorEmail = "";
 
 
@@ -40,26 +45,42 @@ const twoFactorEmail = "";
   let authorOfDay = data2[randomNumber].author;
   let quoteOfDay = `"${textOfDay}" - ${authorOfDay}`;
 
+
+
   // Let the beast loose!
   const browser = await puppeteer.launch({
+    //args: ["--no-sandbox", "--disable-setuid-sandbox", "--headless", "--disable-dev-shm-usage"],
     headless: false,
-    args: ["--no-sandbox", "--disable-setuid-sandbox", "--headless", "--disable-dev-shm-usage"],
     executablePath: process.env.CHROMIUM_PATH,
   });
   const page = await browser.newPage();
   await page.goto("https://twitter.com/login");
 
-  page.waitForSelector("input");
+  console.log("Navigated to Twitter.com")
+
+  await page.waitForSelector("input");
+
   // In puppeteer - querySelectorAll is $$
   const inputs = await page.$$("input");
-  await inputs[5].type(username);
-  await inputs[6].type(password);
 
-  const loginButton = await page.$$('[role="button"]');
+  await inputs[5].type(username);
+  console.log("Input 5 found");
+  console.log(username);
+  await inputs[6].type(password);
+  console.log(password);
+
+  // What URL are we currently on?
+  console.log(page.url());
+
+  console.log("Finding login button");
+  const loginButton = await page.$$('[role="button2"]');
+  //console.log(loginButton[0]);
   await loginButton[0].click();
 
-  await page.waitForTimeout(3000).then(() => {
-    console.log("Waited for 3s");
+  await page.waitForTimeout(6000).then(() => {
+    console.log("Waited for 6s");
+    // What URL are we currently on?
+    console.log(page.url());
   });
 
   // const twoFactorInputs = await page.$$("input");
@@ -71,15 +92,21 @@ const twoFactorEmail = "";
 
   await page.waitForTimeout(4000).then(async () => {
     console.log("Waited 4 seconds!");
-    page.waitForSelector('[role="textbox"]');
-    const tweetInputField = await page.$$('[role="textbox"]');
-    tweetInputField[0].click();
-
+    // What URL are we currently on?
+    console.log(page.url());
+    await page.waitForSelector('[aria-label="Tweet text"]');
+    const tweetInputField = await page.$$('[aria-label="Tweet text"]');
+    //tweetInputField[0].click();
+    //console.log(tweetInputField[0]);
+    console.log("tweetInputField why don't you exist?");
     await tweetInputField[0].type(quoteOfDay);
+    //await tweetInputField[0].type("Hello World, Online");
 
     const tweetButton = await page.$$('[data-testid="tweetButtonInline"]');
     tweetButton[0].click();
-  });
+  }).catch((error) => {
+    console.error(error);
+  });;
 
   await page.waitForTimeout(4000);
   await browser.close();

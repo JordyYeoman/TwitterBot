@@ -111,3 +111,8 @@ dist
 # Docker Files
 Dockerfile
 .Dockerfile
+
+# opeNode Files
+.opeNode
+.openode 
+openode
